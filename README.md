@@ -36,8 +36,9 @@ Alternatively you can start `gol(p::Preset, size::Tuple(Int,Int))` using a prese
 gameoflife(Glider(), (40, 40))
 ```
 
-Currently only two Presets are provided:
+Currently the following Presets are available:
 * Glider
 * BHeptomino
+* GosperGun
 
 PRs are welcome!
