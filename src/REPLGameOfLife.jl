@@ -3,7 +3,6 @@ module REPLGameOfLife
 
 using Compat
 export gol, gameoflife
-export Glider, BHeptomino
 
 include("../Terminal.jl/Terminal.jl")
 using .Terminal
@@ -11,7 +10,7 @@ using .Terminal
 include("braille_hd.jl")
 include("presets.jl")
 
-function next_gen!(board::Array{Int,2}, survive=[2,3], birth=[3])
+function next_gen!(board::Array{Int,2}, survive::Vector{Int}, birth::Vector{Int})
     newboard = copy(board)
     dx, dy = size(board)
     for i in 1:dx
@@ -30,7 +29,7 @@ function live_neighbors(board, i, j)
     return sum(board[wrap_idx.(i, -1:1, dy), wrap_idx.(j, -1:1, dx)]) - board[i,j]
 end
 
-function gol(board = rand([1,0,0,0,0,0,0,0,0,0,0], 80, 80); pause=0.5)
+function gol(board = rand([1,0,0,0,0,0,0,0,0,0,0], 80, 80); pause=0.5, survive=[2,3], birth=[3])
     rawmode() do
         abort=[false]
         clear_screen()
@@ -40,7 +39,7 @@ function gol(board = rand([1,0,0,0,0,0,0,0,0,0,0], 80, 80); pause=0.5)
         @async while !abort[1]
             clear_screen()
             old = copy(board)
-            next_gen!(board)
+            next_gen!(board, survive, birth)
             i += 1
             update_board!(arr2braille(old), arr2braille(board))
             sleep(pause)
