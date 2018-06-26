@@ -9,21 +9,19 @@ function tobraille(a::BitArray{2})
     return Char(res)
 end
 
-tobraille(a::AbstractArray) = tobraille(Bool.(a))
+tobraille(a::AbstractArray) = tobraille(a .> 0)
 
 function arr2braille(arr)
-    dy1, dx1 = size(arr)
-    dx = Int(ceil(dx1/2))
-    dy = Int(ceil(dy1/4))
+    dyarr, dxarr = size(arr)
+    dx = ceil(Int, dxarr/2)
+    dy = ceil(Int, dyarr/4)
     a = zeros(Int, dy*4, dx*2)
-    a[1:dy1, 1:dx1] = arr
+    a[1:dyarr, 1:dxarr] = arr
     res = fill(Char(0x2800), (dy, dx))
     for y in 1:dy, x in 1:dx
         y1 = 1+(y-1)*4
-        y2 = y1+3
         x1 = 1+(x-1)*2
-        x2 = x1+1
-        res[y,x] = tobraille(a[y1:y2, x1:x2])
+        res[y,x] = tobraille(a[y1:y1+3, x1:x1+1])
     end
     return res
 end

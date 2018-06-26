@@ -13,11 +13,12 @@ include("presets.jl")
 function next_gen!(board::Array{Int,2}, survive::Vector{Int}, birth::Vector{Int})
     newboard = copy(board)
     dx, dy = size(board)
-    for i in 1:dx
-        for j in 1:dy
-            live_cells = live_neighbors(board, i, j)
-            board[i,j] == 1 &&  live_cells ∉ survive && (newboard[i,j] = 0)
-            board[i,j] == 0 &&  live_cells ∈ birth   && (newboard[i,j] = 1)
+    for i in 1:dx, j in 1:dy
+        live_cells = live_neighbors(board, i, j)
+        if board[i,j] == 0
+            live_cells ∈ birth && (newboard[i,j] = 1)
+        else
+            live_cells ∈ survive ? (newboard[i,j] += 1) : (newboard[i,j] = 0)
         end
     end
     board[:,:] = newboard
@@ -25,22 +26,22 @@ end
 
 function live_neighbors(board, i, j)
     dy, dx = size(board)
-    wrap_idx(i,di,s) = (i+di+s-1)%s+1
-    return sum(board[wrap_idx.(i, -1:1, dy), wrap_idx.(j, -1:1, dx)]) - board[i,j]
+    wrap(idx,range,size) = (idx + range + size - 1) % size + 1
+    sum(board[wrap.(i, -1:1, dy), wrap.(j, -1:1, dx)] .> 0) - (board[i,j] > 0)
 end
 
-function gol(board = rand([1,0,0,0,0,0,0,0,0,0,0], 80, 80); pause=0.5, survive=[2,3], birth=[3])
+function gol(board = rand([1,0,0,0,0,0,0,0,0,0,0], 80, 80); pause=0.1, survive=[2,3], birth=[3])
     rawmode() do
         abort=[false]
         clear_screen()
         update_board!(arr2braille(zeros(board)), arr2braille(board))
         sleep(pause)
-        i = 0
+        generation = 0
         @async while !abort[1]
             clear_screen()
             old = copy(board)
             next_gen!(board, survive, birth)
-            i += 1
+            generation += 1
             update_board!(arr2braille(old), arr2braille(board))
             sleep(pause)
         end
