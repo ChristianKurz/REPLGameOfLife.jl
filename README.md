@@ -9,6 +9,11 @@ Playing in the VSCode REPL:
 ![Screenshot](resources/Screenshot.png)
 
 ## Installation
+*REPLGameOfLife* is registered in METADATA and can be installed using the package manager:
+```julia
+#enter package manager with ]
+(v0.7) pkg> add REPLGameOfLife
+```
 
 ## Playing
 After Installation, use the Package (`using REPLGameofLife`) and start a game with `gameoflife()` or its short form `gol()`.
